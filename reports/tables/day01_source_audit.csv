@@ -1,0 +1,3 @@
+source,rows,date_min,date_max,distinct_invoices,distinct_stock_codes,distinct_identified_customers,missing_customer_id_rows,missing_description_rows,cancellation_prefix_rows,negative_quantity_rows,zero_quantity_rows,nonpositive_price_rows,duplicate_business_rows_after_first,signed_line_value_gbp_unfiltered
+online_retail,541909,2010-12-01 08:26:00,2011-12-09 12:50:00,25900,4070,4372,135080,1454,9288,10624,0,2517,5268,9747747.934
+online_retail_ii,1067371,2009-12-01 07:45:00,2011-12-09 12:50:00,53628,5305,5942,243007,4382,19494,22950,0,6207,34335,19287250.568

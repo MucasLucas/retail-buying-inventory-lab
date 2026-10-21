@@ -1,0 +1,17 @@
+source,column,missing_rows,missing_fraction
+online_retail,InvoiceNo,0,0.0
+online_retail,StockCode,0,0.0
+online_retail,Description,1454,0.002683107311375157
+online_retail,Quantity,0,0.0
+online_retail,InvoiceDate,0,0.0
+online_retail,UnitPrice,0,0.0
+online_retail,CustomerID,135080,0.249266943342886
+online_retail,Country,0,0.0
+online_retail_ii,InvoiceNo,0,0.0
+online_retail_ii,StockCode,0,0.0
+online_retail_ii,Description,4382,0.0041054141437232225
+online_retail_ii,Quantity,0,0.0
+online_retail_ii,InvoiceDate,0,0.0
+online_retail_ii,UnitPrice,0,0.0
+online_retail_ii,CustomerID,243007,0.22766872999172733
+online_retail_ii,Country,0,0.0

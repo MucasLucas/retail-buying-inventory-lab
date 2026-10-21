@@ -1,0 +1,33 @@
+{
+  "ingested_at_utc": "2026-10-21T05:02:59.521696+00:00",
+  "python_version": "3.12.10",
+  "pandas_version": "2.3.3",
+  "primary_source": "online_retail_ii",
+  "sources": {
+    "online_retail": {
+      "url": "https://archive.ics.uci.edu/static/public/352/online%2Bretail.zip",
+      "workbook": "Online Retail.xlsx",
+      "doi": "https://doi.org/10.24432/C5BW33",
+      "expected_rows": 541909,
+      "archive_sha256": "f5385cbb54bbebf7196389109c6b0621faab0c304e3702548165e71c84aede8b",
+      "workbook_sha256": "43465a06f2ccf7c8b5bd2892bc7defb52f97487934fe93b16ae4c3936424676d",
+      "sheet_rows": {
+        "Online Retail": 541909
+      },
+      "observed_rows": 541909
+    },
+    "online_retail_ii": {
+      "url": "https://archive.ics.uci.edu/static/public/502/online%2Bretail%2Bii.zip",
+      "workbook": "online_retail_II.xlsx",
+      "doi": "https://doi.org/10.24432/C5CG6D",
+      "expected_rows": 1067371,
+      "archive_sha256": "572e36277c2390fbfde10664750731e0a86f55e33470d91919085f0408e67bfb",
+      "workbook_sha256": "bcbe73b35f5b7babf197fb0cb983a11f5d9ff929078d4aa53d171b1f2df2e980",
+      "sheet_rows": {
+        "Year 2009-2010": 525461,
+        "Year 2010-2011": 541910
+      },
+      "observed_rows": 1067371
+    }
+  }
+}
