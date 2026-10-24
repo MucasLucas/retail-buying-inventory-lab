@@ -32,15 +32,116 @@ TEXT_COLUMNS = [
 
 
 def require(condition: bool, message: str) -> None:
+    """Stop processing when a required check fails."""
     if not condition:
         raise ValueError(message)
+
+
+def row_counts(frame: pd.DataFrame, name: str) -> pd.DataFrame:
+    """Count occurrences of each business row, including missing values."""
+    return (
+        frame.groupby(
+            BUSINESS_COLUMNS,
+            dropna=False,
+            observed=True,
+        )
+        .size()
+        .rename(name)
+        .reset_index()
+    )
+
+
+def resolve_internal_overlap(primary: pd.DataFrame) -> pd.DataFrame:
+    """Give the newer sheet ownership of the verified overlap."""
+    original_rows = len(primary)
+    expected_sheets = {"Year 2009-2010", "Year 2010-2011"}
+
+    require(
+        set(primary["source_sheet"].unique()) == expected_sheets,
+        "Unexpected workbook sheets: review source ownership.",
+    )
+
+    older = primary.loc[
+        primary["source_sheet"].eq("Year 2009-2010")
+    ].copy()
+
+    newer = primary.loc[
+        primary["source_sheet"].eq("Year 2010-2011")
+    ].copy()
+
+    require(
+        not older.empty and not newer.empty,
+        "Both expected workbook sheets must contain records.",
+    )
+    require(
+        primary["InvoiceDate"].notna().all(),
+        "Missing invoice dates prevent reliable sheet ownership.",
+    )
+
+    boundary = newer["InvoiceDate"].min()
+
+    older_overlap = older.loc[
+        older["InvoiceDate"].ge(boundary)
+    ].copy()
+
+    overlap_check = row_counts(
+        older_overlap, "older_count"
+    ).merge(
+        row_counts(newer, "newer_count"),
+        on=BUSINESS_COLUMNS,
+        how="left",
+        validate="one_to_one",
+    )
+
+    uncovered = (
+        overlap_check["older_count"]
+        - overlap_check["newer_count"].fillna(0)
+    ).clip(lower=0).sum()
+
+    require(
+        uncovered == 0,
+        "Some older-sheet overlap rows are absent from the newer "
+        "sheet. Review before removing any overlap.",
+    )
+
+    retained = pd.concat(
+        [
+            older.loc[older["InvoiceDate"].lt(boundary)],
+            newer,
+        ],
+        ignore_index=True,
+    )
+
+    require(
+        len(retained) + len(older_overlap) == original_rows,
+        "Internal overlap row accounting failed.",
+    )
+
+    pd.DataFrame([{
+        "original_rows": original_rows,
+        "newer_sheet_ownership_start": str(boundary),
+        "older_overlap_rows_removed": len(older_overlap),
+        "uncovered_older_overlap_rows": int(uncovered),
+        "retained_primary_rows": len(retained),
+    }]).to_csv(
+        TABLES / "day02_internal_overlap.csv",
+        index=False,
+    )
+
+    print(
+        f"Internal overlap: removed {len(older_overlap):,} "
+        f"older-sheet rows; retained {len(retained):,} rows.",
+        flush=True,
+    )
+
+    return retained
 
 
 def reconcile_sources(
     reference: pd.DataFrame,
     primary: pd.DataFrame,
 ) -> dict:
-    """Compare row multiplicities, preserving repeated source lines."""
+    """Compare overlapping records and their occurrence counts."""
     start = reference["InvoiceDate"].min()
     end = reference["InvoiceDate"].max()
 
@@ -49,48 +150,48 @@ def reconcile_sources(
         BUSINESS_COLUMNS,
     ].copy()
 
-    # Grouping counts avoids many-to-many joins on repeated rows.
-    reference_counts = (
-        reference.groupby(
-            BUSINESS_COLUMNS,
-            dropna=False,
-            observed=True,
-        )
-        .size()
-        .rename("reference_count")
-        .reset_index()
-    )
-
-    primary_counts = (
-        overlap.groupby(
-            BUSINESS_COLUMNS,
-            dropna=False,
-            observed=True,
-        )
-        .size()
-        .rename("primary_count")
-        .reset_index()
-    )
-
-    comparison = reference_counts.merge(
-        primary_counts,
+    comparison = row_counts(
+        reference, "reference_count"
+    ).merge(
+        row_counts(overlap, "primary_count"),
         on=BUSINESS_COLUMNS,
         how="outer",
         validate="one_to_one",
     )
 
-    counts = ["reference_count", "primary_count"]
-    comparison[counts] = (
-        comparison[counts].fillna(0).astype("int64")
+    count_columns = ["reference_count", "primary_count"]
+
+    comparison[count_columns] = (
+        comparison[count_columns].fillna(0).astype("int64")
     )
 
-    matched = comparison[counts].min(axis=1)
+    matched = comparison[count_columns].min(axis=1)
 
-    reference_excess = (
-        comparison["reference_count"] - matched
+    reference_excess = comparison["reference_count"] - matched
+    primary_excess = comparison["primary_count"] - matched
+
+    exact_match = bool(
+        reference_excess.sum() == 0
+        and primary_excess.sum() == 0
     )
-    primary_excess = (
-        comparison["primary_count"] - matched
+
+    extra = comparison.loc[primary_excess.gt(0)]
+
+    # This exception applies only to the specifically inspected
+    # extra postage line. Every reference row must still match.
+    known_postage_difference = bool(
+        reference_excess.sum() == 0
+        and primary_excess.sum() == 1
+        and len(extra) == 1
+        and extra["InvoiceNo"].eq("581587").all()
+        and extra["StockCode"].eq("POST").all()
+        and extra["Description"].eq("POSTAGE").all()
+        and extra["Quantity"].eq(1).all()
+        and extra["UnitPrice"].eq(18.0).all()
+        and extra["Country"].eq("France").all()
+        and extra["InvoiceDate"].eq(
+            pd.Timestamp("2011-12-09 12:50:00")
+        ).all()
     )
 
     summary = {
@@ -101,9 +202,10 @@ def reconcile_sources(
         "matched_rows_with_multiplicity": int(matched.sum()),
         "reference_unmatched_rows": int(reference_excess.sum()),
         "primary_unmatched_rows": int(primary_excess.sum()),
-        "exact_multiset_match": bool(
-            reference_excess.sum() == 0
-            and primary_excess.sum() == 0
+        "exact_multiset_match": exact_match,
+        "known_postage_difference": known_postage_difference,
+        "reconciliation_accepted": bool(
+            exact_match or known_postage_difference
         ),
     }
 
@@ -112,7 +214,6 @@ def reconcile_sources(
         index=False,
     )
 
-    # Export daily differences without customer-level identifiers.
     daily_tables = []
 
     for label, frame in [
@@ -120,7 +221,9 @@ def reconcile_sources(
         ("primary", overlap),
     ]:
         daily = (
-            frame.assign(date=frame["InvoiceDate"].dt.normalize())
+            frame.assign(
+                date=frame["InvoiceDate"].dt.normalize()
+            )
             .groupby("date")
             .agg(
                 rows=("Quantity", "size"),
@@ -150,9 +253,9 @@ def reconcile_sources(
 
 
 def classify_transactions(primary: pd.DataFrame) -> pd.DataFrame:
+    """Normalize working fields and assign one disposition per row."""
     frame = primary.copy()
 
-    # Retain the original columns alongside normalized working values.
     for column in TEXT_COLUMNS:
         frame[f"raw_{column}"] = frame[column]
         frame[column] = (
@@ -174,12 +277,13 @@ def classify_transactions(primary: pd.DataFrame) -> pd.DataFrame:
     frame["missing_customer_id"] = frame["CustomerID"].isna()
     frame["missing_description"] = frame["Description"].isna()
 
-    # Provisional rule: five digits with optional alphabetic suffix.
+    # Provisional merchandise rule, subject to stock-code review.
     frame["standard_stock_code"] = (
         frame["StockCode"]
         .str.fullmatch(r"\d{5}[A-Z]*", na=False)
     )
 
+    # Preserve repeated lines; flag later occurrences for sensitivity.
     frame["repeated_business_row"] = frame.duplicated(
         subset=BUSINESS_COLUMNS,
         keep="first",
@@ -187,12 +291,18 @@ def classify_transactions(primary: pd.DataFrame) -> pd.DataFrame:
 
     frame["disposition"] = "eligible_sale"
 
+    required_fields = [
+        "InvoiceNo",
+        "StockCode",
+        "InvoiceDate",
+        "Quantity",
+        "UnitPrice",
+        "Country",
+    ]
+
     rules = [
         (
-            frame[
-                ["InvoiceNo", "StockCode", "InvoiceDate",
-                 "Quantity", "UnitPrice", "Country"]
-            ].isna().any(axis=1),
+            frame[required_fields].isna().any(axis=1),
             "missing_required_field",
         ),
         (
@@ -217,7 +327,7 @@ def classify_transactions(primary: pd.DataFrame) -> pd.DataFrame:
         ),
     ]
 
-    # Assign one reason per row, using the priority above.
+    # Earlier rules take priority.
     for mask, label in rules:
         unassigned = frame["disposition"].eq("eligible_sale")
         frame.loc[unassigned & mask, "disposition"] = label
@@ -243,11 +353,23 @@ def main() -> None:
         require(path.exists(), f"Missing Day 1 output: {path}")
 
     print("Loading Day 1 outputs...", flush=True)
+
     reference = pd.read_parquet(paths["reference"])
     primary = pd.read_parquet(paths["primary"])
 
+    primary = resolve_internal_overlap(primary)
+
     print("Reconciling overlapping records...", flush=True)
     reconciliation = reconcile_sources(reference, primary)
+
+    print("\nOVERLAP RECONCILIATION")
+    print(json.dumps(reconciliation, indent=2))
+
+    require(
+        reconciliation["reconciliation_accepted"],
+        "Source reconciliation failed. Inspect the overlap reports "
+        "before generating new processed sales files.",
+    )
 
     print("Classifying primary-source transactions...", flush=True)
     classified = classify_transactions(primary)
@@ -256,7 +378,10 @@ def main() -> None:
         classified["disposition"].eq("eligible_sale")
     ].copy()
 
-    require(len(sales) > 0, "No eligible sales: inspect the rules.")
+    require(
+        len(sales) > 0,
+        "No eligible sales: inspect the rules.",
+    )
     require(
         sales["Quantity"].gt(0).all(),
         "Eligible sales contain nonpositive quantities.",
@@ -288,7 +413,7 @@ def main() -> None:
 
     require(
         int(disposition["rows"].sum()) == len(primary),
-        "Classification did not account for every source row.",
+        "Classification did not account for every retained source row.",
     )
 
     disposition.to_csv(
@@ -296,8 +421,8 @@ def main() -> None:
         index=False,
     )
 
-    # Review all nonstandard codes, including those excluded earlier
-    # for another reason, such as a cancellation.
+    # Include all nonstandard codes, even if another rule excluded
+    # their records first.
     code_review = (
         classified.loc[~classified["standard_stock_code"]]
         .groupby("StockCode", dropna=False)
@@ -366,13 +491,11 @@ def main() -> None:
         PROCESSED / "transactions_classified.parquet",
         index=False,
     )
+
     sales.to_parquet(
         PROCESSED / "merchandise_sales.parquet",
         index=False,
     )
-
-    print("\nOVERLAP RECONCILIATION")
-    print(json.dumps(reconciliation, indent=2))
 
     print("\nTRANSACTION DISPOSITIONS")
     print(disposition.to_string(index=False))
@@ -382,12 +505,6 @@ def main() -> None:
 
     print("\nCUSTOMER COVERAGE")
     print(coverage.to_string(index=False))
-
-    if not reconciliation["exact_multiset_match"]:
-        print(
-            "\nREVIEW REQUIRED: Overlapping sources differ. "
-            "Inspect reconciliation before proceeding to Day 3."
-        )
 
     print("\nDay 2 processing complete. No sources were appended.")
 
