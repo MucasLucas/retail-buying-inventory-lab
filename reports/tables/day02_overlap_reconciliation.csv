@@ -1,2 +1,2 @@
-overlap_start,overlap_end,reference_rows,primary_overlap_rows,matched_rows_with_multiplicity,reference_unmatched_rows,primary_unmatched_rows,exact_multiset_match
-2010-12-01 08:26:00,2011-12-09 12:50:00,541909,564433,541909,0,22524,False
+overlap_start,overlap_end,reference_rows,primary_overlap_rows,matched_rows_with_multiplicity,reference_unmatched_rows,primary_unmatched_rows,exact_multiset_match,known_postage_difference,reconciliation_accepted
+2010-12-01 08:26:00,2011-12-09 12:50:00,541909,541910,541909,0,1,False,True,True
