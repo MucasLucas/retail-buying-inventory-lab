@@ -50,3 +50,6 @@ Requires Python 3.11 or newer.
 ## Progress
 
 - Day 1: Source ingestion and audit.
+- Day 2: Reconciled overlapping sources, classified all primary-source
+  records, and created eligible merchandise sales with documented
+  customer coverage and repeated-row sensitivity.

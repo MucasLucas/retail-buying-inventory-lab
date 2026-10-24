@@ -1,0 +1,3 @@
+scenario,rows,units,gross_sales_gbp
+preserve_repeated_rows_primary,1036877,11402383.0,20108995.4
+remove_repeated_rows_sensitivity,1003214,11187774.0,19642692.150000002
