@@ -4,3 +4,4 @@ pyarrow>=18,<24
 requests>=2.32,<3
 
 matplotlib
+scikit-learn

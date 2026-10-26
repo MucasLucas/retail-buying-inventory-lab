@@ -1,0 +1,2 @@
+model,sku_week_forecasts,actual_units,predicted_units,absolute_error_units,mae_units,wape_pct,bias_pct,underforecast_units,overforecast_units,mean_mase,mase_scored_rows
+mean_4_weeks,80,58479.0,52574.0,34443.0,430.5375,58.898065972400346,-10.097641888541185,20174.0,14269.0,1.130766850398949,80
