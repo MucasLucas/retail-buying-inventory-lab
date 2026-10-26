@@ -58,3 +58,9 @@ Requires Python 3.11 or newer.
   - Day 4: Evaluated four weekly-sales baselines across three historical
   four-week validation windows for a cohort selected using prior data.
   Reserved a later four-week period for final model evaluation.
+- Day 5: Compared a fixed Random Forest challenger with reproducible
+  baselines, selected a method using validation WAPE, and evaluated
+  the frozen selection on a reserved four-week period.
+  - Day 6: Selected inventory buffers using historical validation forecasts
+  and assessed coverage-versus-surplus trade-offs under explicit
+  lead-time and shortage-penalty scenarios.
