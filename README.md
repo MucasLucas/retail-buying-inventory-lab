@@ -53,3 +53,7 @@ Requires Python 3.11 or newer.
 - Day 2: Reconciled overlapping sources, classified all primary-source
   records, and created eligible merchandise sales with documented
   customer coverage and repeated-row sensitivity.
+
+  - Day 4: Evaluated four weekly-sales baselines across three historical
+  four-week validation windows for a cohort selected using prior data.
+  Reserved a later four-week period for final model evaluation.
