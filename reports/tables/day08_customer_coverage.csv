@@ -1,0 +1,3 @@
+scope,rows,distinct_invoices,gross_sales_gbp,gross_sales_share_of_all_eligible_uk
+all_eligible_uk_sales,460405,17157,8174883.82,1.0
+identified_customer_uk_sales,338194,15874,6795530.42,0.831269357415773

@@ -1,0 +1,15 @@
+metric,score,customers,minimum,maximum
+recency_days,1,778,178.0,365.0
+recency_days,2,768,70.0,177.0
+recency_days,3,761,34.0,69.0
+recency_days,4,786,14.0,32.0
+recency_days,5,789,1.0,13.0
+frequency_orders,1,1398,1.0,1.0
+frequency_orders,3,719,2.0,2.0
+frequency_orders,4,1018,3.0,5.0
+frequency_orders,5,747,6.0,197.0
+monetary_gbp,1,776,2.9,236.0
+monetary_gbp,2,776,236.02,453.0
+monetary_gbp,3,777,453.4,870.09
+monetary_gbp,4,776,870.85,1865.19
+monetary_gbp,5,777,1867.54,248171.76

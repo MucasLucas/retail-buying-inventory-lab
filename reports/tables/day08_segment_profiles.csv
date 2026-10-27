@@ -1,0 +1,8 @@
+segment,customers,orders,gross_sales_gbp,units,median_recency_days,median_orders_per_customer,median_gross_sales_per_customer_gbp,customer_share,identified_gross_sales_share,average_order_value_gbp,buyer_action
+Champions,886,9080,4466566.43,2539210,11.0,7.0,2370.96,0.2282328696548171,0.6572800287751489,491.91260242290747,Protect availability of frequently purchased products; test relevant complementary-product recommendations.
+Recent repeat buyers,428,1166,263698.49,161716,14.0,2.0,589.5699999999999,0.11025244719216898,0.038804695689964995,226.15650943396227,Support repeat purchasing with replenishment reminders and relevant assortment recommendations.
+Recent low-frequency buyers,261,261,81933.76,56845,17.0,1.0,245.96,0.06723338485316847,0.012057007317465587,313.9224521072797,Test a second-purchase journey; do not assume these customers are newly acquired.
+High-frequency buyers at risk,357,1564,589760.47,329132,116.0,4.0,1046.57,0.0919629057187017,0.08678652489940586,377.084699488491,Investigate lapses in formerly frequent purchasing; test targeted reengagement.
+High-value buyers at risk,101,164,214459.62,165116,164.0,2.0,1156.36,0.02601751674394642,0.03155892281326878,1307.6806097560975,Review historical product preferences and large orders before personalized reengagement.
+Other inactive buyers,1088,1350,334113.87,198337,209.0,1.0,271.145,0.28026790314270994,0.0491667094913836,247.49175555555556,Use a limited reactivation test and assess incremental response before expanding investment.
+Developing buyers,761,2289,844997.78,539365,50.0,2.0,657.3,0.19603297269448738,0.12434611101336222,369.15586719091306,Test relevant product discovery and repeat-purchase messages rather than blanket discounts.

@@ -1,0 +1,18 @@
+{
+  "country": "United Kingdom",
+  "purchase_window_start": "2010-12-01",
+  "snapshot_date_exclusive": "2011-12-01",
+  "monetary_definition": "eligible gross merchandise sales before credits",
+  "frequency_definition": "distinct purchase invoices",
+  "scoring": "ceil(5 * average-rank percentile); ties share scores",
+  "customer_level_output": "data/processed/customer_rfm.parquet",
+  "segment_priority": [
+    "Champions",
+    "Recent repeat buyers",
+    "Recent low-frequency buyers",
+    "High-frequency buyers at risk",
+    "High-value buyers at risk",
+    "Other inactive buyers",
+    "Developing buyers"
+  ]
+}

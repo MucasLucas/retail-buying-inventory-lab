@@ -67,3 +67,6 @@ Requires Python 3.11 or newer.
   - Day 7: Discovered directional product-pair associations in UK baskets
   and checked a frozen shortlist for later-period persistence.
   Framed persistent rules as cross-selling experiment candidates.
+  - Day 8: Built tie-aware UK customer RFM segments, quantified
+  customer-identification coverage and gross-sales concentration,
+  and proposed segment-specific commercial experiments.
