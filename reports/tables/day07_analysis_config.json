@@ -1,0 +1,15 @@
+{
+  "country": "United Kingdom",
+  "discovery_start": "2010-12-01",
+  "confirmation_start": "2011-09-01",
+  "end_exclusive": "2011-12-01",
+  "maximum_basket_skus": 50,
+  "maximum_candidate_products": 200,
+  "maximum_shortlist_rules": 20,
+  "discovery_min_pair_baskets": 20,
+  "discovery_min_confidence": 0.15,
+  "discovery_min_lift": 1.5,
+  "confirmation_min_pair_baskets": 5,
+  "confirmation_min_confidence": 0.15,
+  "confirmation_min_lift": 1.2
+}

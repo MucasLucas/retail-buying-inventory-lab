@@ -1,0 +1,3 @@
+period,eligible_sales_rows_before_basket_filter,invoices_before_filter,invoices_excluded_over_size_limit,invoices_retained,single_sku_invoices_retained,distinct_skus_retained,maximum_allowed_distinct_skus
+discovery,285211,11256,1082,10174,948,3306,50
+confirmation,175194,5901,740,5161,392,2841,50

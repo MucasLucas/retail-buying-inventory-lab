@@ -64,3 +64,6 @@ Requires Python 3.11 or newer.
   - Day 6: Selected inventory buffers using historical validation forecasts
   and assessed coverage-versus-surplus trade-offs under explicit
   lead-time and shortage-penalty scenarios.
+  - Day 7: Discovered directional product-pair associations in UK baskets
+  and checked a frozen shortlist for later-period persistence.
+  Framed persistent rules as cross-selling experiment candidates.
