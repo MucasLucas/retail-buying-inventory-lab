@@ -70,3 +70,6 @@ Requires Python 3.11 or newer.
   - Day 8: Built tie-aware UK customer RFM segments, quantified
   customer-identification coverage and gross-sales concentration,
   and proposed segment-specific commercial experiments.
+  - Day 9: Integrated assortment, forecasting, inventory, cross-selling,
+  and customer findings into an evidence-backed buyer action plan,
+  inventory sensitivity summary, and prioritized delivery backlog.
